@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Чистый Дом — Экспресс-калькулятор химчистки мебели</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Шапка сайта -->
+  <header class="header">
+    <div class="container header-container">
+      <div class="logo-group">
+        <div class="logo-icon">✨</div>
+        <div>
+          <h1 class="logo-title">Чистый Дом</h1>
+          <p class="logo-subtitle">Выездная химчистка мебели и ковров</p>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="pulse-dot"></span>
+        <span>Работаем сегодня</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main container">
+    <!-- Главный блок (Hero Split) с плашкой этапов и кнопкой перехода к каталогу -->
+    <section class="hero-split">
+      <div class="hero-left">
+        <div class="hero-tag">
+          <span class="hero-tag-dot"></span>
+          <span>Окно записи и расчёта</span>
+        </div>
+        <h2 class="hero-heading">Чистая мебель <br><span class="hero-highlight">к вашей дате</span></h2>
+        <p class="hero-text">Выберите диван, матрас или кресло, узнайте честную стоимость за 60 секунд и оставьте контакты. Заявка с расчётом сразу уйдёт мастеру в Telegram. Оплаты на сайте нет.</p>
+        
+        <div class="hero-cta-row">
+          <a href="#catalog" class="btn-hero-catalog">
+            <span>Смотреть каталог мебели</span>
+            <span class="btn-hero-arrow">↓</span>
+          </a>
+          <div class="hero-trust-badge">
+            <span>🛡️ Без предоплаты, оплата на месте</span>
+          </div>
+        </div>
+
+        <!-- Плашка этапов заказа (Интерактивный степпер) -->
+        <div class="hero-steps-card">
+          <div class="step-item">
+            <span class="step-circle">1</span>
+            <div class="step-info">
+              <span class="step-label">Выберите мебель</span>
+              <span class="step-sub">расчёт вилки цен</span>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item">
+            <span class="step-circle">2</span>
+            <div class="step-info">
+              <span class="step-label">Укажите дату</span>
+              <span class="step-sub">и фото пятен</span>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item">
+            <span class="step-circle">3</span>
+            <div class="step-info">
+              <span class="step-label">Заявка мастеру</span>
+              <span class="step-sub">в Telegram за 1 клик</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Правая колонка: Визуальный шоукейс-коллаж с маркизой -->
+      <div class="hero-right">
+        <div class="hero-showcase-frame">
+          <div class="showcase-canopy"></div>
+          <div class="showcase-grid">
+            <div class="showcase-main">
+              <img src="images/sofa_corner.png" alt="Чистый угловой диван" class="showcase-img">
+              <div class="showcase-overlay-pill">
+                <span>✨ 98% пятен удалено</span>
+              </div>
+            </div>
+            <div class="showcase-side">
+              <div class="showcase-side-card">
+                <img src="images/mat_double.png" alt="Матрас" class="showcase-side-img">
+                <span class="side-card-pill">🛏️ Матрасы</span>
+              </div>
+              <div class="showcase-side-card">
+                <img src="images/armchair.png" alt="Кресло" class="showcase-side-img">
+                <span class="side-card-pill">💨 Сушка 2ч</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Шаг 1: Выбор мебели в виде сетки карточек -->
+    <section class="section" id="catalog">
+      <div class="section-header">
+        <span class="step-num">1</span>
+        <div>
+          <h3 class="section-title">Каталог мебели и услуг</h3>
+          <p class="section-subtitle">Нажмите «Выбрать», и предмет попадёт в предварительный расчёт</p>
+        </div>
+      </div>
+
+      <!-- Категория: Диваны -->
+      <div class="category-block">
+        <div class="category-title">🛋️ Диваны</div>
+        <div class="items-grid">
+          
+          <!-- Прямой 2-местный -->
+          <div class="calc-card" data-id="sofa_2" data-name="Прямой 2-местный диван" data-price="2200">
+            <div class="card-img-wrap">
+              <img src="images/sofa_2.png" onerror="this.src='https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=500&q=80'" alt="Прямой 2-местный диван" class="card-img" loading="lazy">
+              <span class="card-badge">✨ Популярно</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Прямой 2-местный диван</h4>
+              <p class="card-desc">Компактный диван длиной до 160 см. Экстракторная глубинная чистка обивки, удаление пыли и бытовых пятен.</p>
+              <div class="card-meta">
+                <span class="meta-tag">⏱️ 1.5–2 часа</span>
+                <span class="meta-tag">💧 Без запаха</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 2 200 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus" aria-label="Уменьшить">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus" aria-label="Увеличить">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Прямой 3-местный -->
+          <div class="calc-card" data-id="sofa_3" data-name="Прямой 3-местный диван" data-price="2800">
+            <div class="card-img-wrap">
+              <img src="images/sofa_3.png" onerror="this.src='https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=500&q=80'" alt="Прямой 3-местный диван" class="card-img" loading="lazy">
+              <span class="card-badge">🔥 Топ выбор</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Прямой 3-местный диван</h4>
+              <p class="card-desc">Классический диван длиной до 220 см. Глубокая промывка ткани сидений, спинки, подлокотников и складок.</p>
+              <div class="card-meta">
+                <span class="meta-tag">⏱️ ~2 часа</span>
+                <span class="meta-tag">🛡️ Выведение пятен</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 2 800 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus" aria-label="Уменьшить">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus" aria-label="Увеличить">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Угловой диван -->
+          <div class="calc-card" data-id="sofa_corner" data-name="Угловой диван с оттоманкой" data-price="3600">
+            <div class="card-img-wrap">
+              <img src="images/sofa_corner.png" onerror="this.src='https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=500&q=80'" alt="Угловой диван" class="card-img" loading="lazy">
+              <span class="card-badge">⭐ Хит</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Угловой диван с оттоманкой</h4>
+              <p class="card-desc">Диван с угловой секцией или шезлонгом до 4–5 мест. Полная промывка наполнителя и удаление засаленности.</p>
+              <div class="card-meta">
+                <span class="meta-tag">⏱️ 2.5–3 часа</span>
+                <span class="meta-tag">✨ Чистые швы</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 3 600 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus" aria-label="Уменьшить">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus" aria-label="Увеличить">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Большой П-образный -->
+          <div class="calc-card" data-id="sofa_u" data-name="Большой П-образный диван" data-price="4800">
+            <div class="card-img-wrap">
+              <img src="images/sofa_u.png" onerror="this.src='https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=500&q=80'" alt="Большой П-образный диван" class="card-img" loading="lazy">
+              <span class="card-badge">👑 Большой</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Большой П-образный диван</h4>
+              <p class="card-desc">Просторный семейный диван с двумя шезлонгами. Капитальная экстракторная промывка всех секций и подушек.</p>
+              <div class="card-meta">
+                <span class="meta-tag">⏱️ 3–3.5 часа</span>
+                <span class="meta-tag">🛋️ До 6–8 мест</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 4 800 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus" aria-label="Уменьшить">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus" aria-label="Увеличить">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Категория: Матрасы -->
+      <div class="category-block">
+        <div class="category-title">🛏️ Матрасы</div>
+        <div class="items-grid">
+          
+          <!-- Односпальный матрас -->
+          <div class="calc-card" data-id="mat_single" data-name="Односпальный матрас" data-price="1500">
+            <div class="card-img-wrap">
+              <img src="images/mat_single.png" onerror="this.src='https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=500&q=80'" alt="Односпальный матрас" class="card-img" loading="lazy">
+              <span class="card-badge">🌿 Эко-чистка</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Односпальный матрас</h4>
+              <p class="card-desc">Размер 80–90×200 см. Удаление пылевых клещей, разводов и запахов с обеих рабочих сторон и торцов.</p>
+              <div class="card-meta">
+                <span class="meta-tag">🛡️ С 2-х сторон</span>
+                <span class="meta-tag">🌿 Гипоаллергенно</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 1 500 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Двуспальный матрас -->
+          <div class="calc-card" data-id="mat_double" data-name="Двуспальный матрас / Евро" data-price="2500">
+            <div class="card-img-wrap">
+              <img src="images/mat_double.png" onerror="this.src='https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=500&q=80'" alt="Двуспальный матрас" class="card-img" loading="lazy">
+              <span class="card-badge">💎 Премиум</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Двуспальный матрас / Евро</h4>
+              <p class="card-desc">Размер 140–180×200 см. Глубокая дезинфекция, выведение желтых ореолов и пятен пота со всех сторон.</p>
+              <div class="card-meta">
+                <span class="meta-tag">🛡️ С 2-х сторон</span>
+                <span class="meta-tag">🛏️ До 180×200</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 2 500 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Категория: Кресла и стулья -->
+      <div class="category-block">
+        <div class="category-title">🪑 Кресла и стулья</div>
+        <div class="items-grid">
+          
+          <!-- Кресло мягкое -->
+          <div class="calc-card" data-id="armchair" data-name="Мягкое кресло для отдыха" data-price="900">
+            <div class="card-img-wrap">
+              <img src="images/armchair.png" onerror="this.src='https://images.unsplash.com/photo-1580481077194-43642398413e?auto=format&fit=crop&w=500&q=80'" alt="Мягкое кресло" class="card-img" loading="lazy">
+              <span class="card-badge">🛋️ Уют</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Мягкое кресло для отдыха</h4>
+              <p class="card-desc">Кресло со спинкой и мягкими подлокотниками. Удаление пыли, пятен от напитков и засаленности ткани.</p>
+              <div class="card-meta">
+                <span class="meta-tag">⏱️ ~45 минут</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 900 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Стул со спинкой -->
+          <div class="calc-card" data-id="chair" data-name="Стул с мягкой спинкой" data-price="400">
+            <div class="card-img-wrap">
+              <img src="images/chair.png" onerror="this.src='https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=500&q=80'" alt="Стул с мягкой спинкой" class="card-img" loading="lazy">
+              <span class="card-badge">🍽️ Для кухни</span>
+            </div>
+            <div class="card-body">
+              <h4 class="card-name">Стул с мягкой спинкой</h4>
+              <p class="card-desc">Обеденный или офисный стул с тканевой обивкой сиденья и спинки. Очистка от жирных пятен и следов чая.</p>
+              <div class="card-meta">
+                <span class="meta-tag">⏱️ 15 мин / шт</span>
+              </div>
+              <div class="card-footer">
+                <div class="card-price-group">
+                  <span class="card-price-label">Стоимость:</span>
+                  <span class="card-price">от 400 ₽</span>
+                </div>
+                <button type="button" class="btn-select">+ Выбрать</button>
+                <div class="counter-control">
+                  <button type="button" class="btn-count btn-minus">-</button>
+                  <span class="count-value">0</span>
+                  <button type="button" class="btn-count btn-plus">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Шаг 2: Дополнительные опции -->
+    <section class="section">
+      <div class="section-header">
+        <span class="step-num">2</span>
+        <div>
+          <h3 class="section-title">Специальная обработка</h3>
+          <p class="section-subtitle">Отметьте, если требуется решение сложной проблемы</p>
+        </div>
+      </div>
+
+      <div class="options-list">
+        <label class="option-card">
+          <input type="checkbox" id="opt_odor" class="opt-checkbox" data-price="600" data-name="Удаление запахов и меток животных">
+          <span class="checkbox-custom"></span>
+          <div class="option-text">
+            <div class="option-name">🐾 Выведение запахов и меток (+600 ₽)</div>
+            <div class="option-desc">Кислородная обработка и нейтрализация урины в глубине наполнителя.</div>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="checkbox" id="opt_dry" class="opt-checkbox" data-price="700" data-name="Турбо-сушка мебели феном">
+          <span class="checkbox-custom"></span>
+          <div class="option-text">
+            <div class="option-name">💨 Турбо-сушка мебели (+700 ₽)</div>
+            <div class="option-desc">Мебель будет полностью сухой уже через 1–2 часа после ухода мастера.</div>
+          </div>
+        </label>
+
+        <label class="option-card">
+          <input type="checkbox" id="opt_shield" class="opt-checkbox" data-price="800" data-name="Гидрофобная защита ткани">
+          <span class="checkbox-custom"></span>
+          <div class="option-text">
+            <div class="option-name">🛡️ Защитное гидрофобное покрытие (+800 ₽)</div>
+            <div class="option-desc">Ткань отталкивает пролитый чай, кофе и воду до 6 месяцев.</div>
+          </div>
+        </label>
+      </div>
+    </section>
+
+    <!-- Шаг 3 и 4: Детали, адрес и контакты (2 колонки на десктопе) -->
+    <section class="section">
+      <div class="section-header">
+        <span class="step-num">3</span>
+        <div>
+          <h3 class="section-title">Куда и когда приехать мастеру?</h3>
+          <p class="section-subtitle">Зафиксируем предварительную цену и свяжемся для подтверждения</p>
+        </div>
+      </div>
+
+      <!-- Индикатор зоны обслуживания -->
+      <div class="zone-notice">
+        <span class="zone-icon">📍</span>
+        <div class="zone-text">
+          <strong>Зона обслуживания:</strong> выезжаем по городу и в радиусе до 30 км. В черте города выезд 0 ₽.
+        </div>
+      </div>
+
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="field-label" for="client_name">Ваше имя *</label>
+          <input type="text" id="client_name" class="form-input" placeholder="Например, Анна" required>
+          <div class="field-error" id="name_error">Пожалуйста, укажите имя</div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="client_phone">Телефон для связи *</label>
+          <input type="tel" id="client_phone" class="form-input" placeholder="+7 (___) ___-__-__" required>
+          <div class="field-error" id="phone_error">Укажите корректный номер телефона</div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="field-label">Когда приехать мастеру? *</label>
+          <div class="date-selector-group">
+            <button type="button" class="date-pill active" id="pill_asap">
+              <span class="pill-icon">⚡</span>
+              <div class="pill-text-wrap">
+                <span class="pill-main">Как можно скорее</span>
+                <span class="pill-sub">сегодня или завтра (по умолчанию)</span>
+              </div>
+              <span class="pill-badge-active">Выбрано</span>
+            </button>
+            <button type="button" class="date-pill" id="pill_custom">
+              <span class="pill-icon">📅</span>
+              <div class="pill-text-wrap">
+                <span class="pill-main">Выбрать дату и время</span>
+                <span class="pill-sub" id="pill_date_text">график свободных бригад</span>
+              </div>
+              <span class="pill-badge-active" style="display: none;">Выбрано</span>
+            </button>
+          </div>
+
+          <!-- Блок информации для экспресс-выезда -->
+          <div class="asap-notice-box" id="asap_notice_box">
+            <div class="asap-icon">⚡</div>
+            <div class="asap-content">
+              <div class="asap-title">Экспресс-выезд бригады (по умолчанию)</div>
+              <div class="asap-desc">Мастер свяжется с вами в течение 15 минут после отправки. Свободная бригада сможет выехать <strong>сегодня через 2–3 часа</strong> либо <strong>завтра утром</strong> в удобное для вас время.</div>
+            </div>
+          </div>
+
+          <!-- Интерактивный календарь с занятостью мастеров -->
+          <div class="custom-calendar-card" id="custom_calendar_card" style="display: none;">
+            
+            <!-- Шапка календаря: Месяц и навигация -->
+            <div class="cal-header">
+              <button type="button" class="cal-nav-btn" id="cal_prev_month" title="Предыдущий месяц">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </button>
+              <div class="cal-title-wrap">
+                <span class="cal-month-title" id="cal_month_title">Октябрь 2026</span>
+                <span class="cal-subtitle">График занятости выездных экипажей</span>
+              </div>
+              <button type="button" class="cal-nav-btn" id="cal_next_month" title="Следующий месяц">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- Дни недели -->
+            <div class="cal-weekdays">
+              <span class="cal-weekday">пн</span>
+              <span class="cal-weekday">вт</span>
+              <span class="cal-weekday">ср</span>
+              <span class="cal-weekday">чт</span>
+              <span class="cal-weekday">пт</span>
+              <span class="cal-weekday weekend">сб</span>
+              <span class="cal-weekday weekend">вс</span>
+            </div>
+
+            <!-- Сетка дней календаря -->
+            <div class="cal-days-grid" id="cal_days_grid">
+              <!-- Динамически рендерится через JavaScript -->
+            </div>
+
+            <!-- Легенда статусов -->
+            <div class="cal-legend">
+              <div class="legend-item"><span class="legend-badge-sample status-free">есть</span><span>Свободно</span></div>
+              <div class="legend-item"><span class="legend-badge-sample status-few">мало</span><span>Осталось мало мест</span></div>
+              <div class="legend-item"><span class="legend-badge-sample status-none">нет</span><span>Мест нет (лист ожидания)</span></div>
+              <div class="legend-item"><span class="legend-badge-sample status-disabled">—</span><span>Недоступно</span></div>
+            </div>
+
+            <!-- Временные интервалы (Уникализация под специфику клининга) -->
+            <div class="cal-time-section">
+              <div class="cal-time-header">
+                <span class="cal-time-title">🕒 Выберите желаемое время прибытия мастера:</span>
+                <span class="cal-time-tag">Чистка длится ~2–3 часа</span>
+              </div>
+              <div class="cal-time-grid" id="cal_time_grid">
+                <button type="button" class="time-slot-btn active" data-time="Любое время (9:00 — 20:00)">
+                  <span class="time-slot-icon">⚡</span>
+                  <div class="time-slot-info">
+                    <span class="time-slot-name">Любое время</span>
+                    <span class="time-slot-hours">09:00 – 20:00</span>
+                  </div>
+                  <span class="time-slot-sub">быстрее всего</span>
+                </button>
+                <button type="button" class="time-slot-btn" data-time="Утро (9:00 — 12:00)">
+                  <span class="time-slot-icon">🌅</span>
+                  <div class="time-slot-info">
+                    <span class="time-slot-name">Утро</span>
+                    <span class="time-slot-hours">09:00 – 12:00</span>
+                  </div>
+                  <span class="time-slot-sub">высохнет к вечеру</span>
+                </button>
+                <button type="button" class="time-slot-btn" data-time="День (12:00 — 16:00)">
+                  <span class="time-slot-icon">☀️</span>
+                  <div class="time-slot-info">
+                    <span class="time-slot-name">День</span>
+                    <span class="time-slot-hours">12:00 – 16:00</span>
+                  </div>
+                  <span class="time-slot-sub">популярный слот</span>
+                </button>
+                <button type="button" class="time-slot-btn" data-time="Вечер (16:00 — 20:00)">
+                  <span class="time-slot-icon">🌙</span>
+                  <div class="time-slot-info">
+                    <span class="time-slot-name">Вечер</span>
+                    <span class="time-slot-hours">16:00 – 20:00</span>
+                  </div>
+                  <span class="time-slot-sub">после работы</span>
+                </button>
+                <button type="button" class="time-slot-btn" data-time="custom" id="btn_custom_time">
+                  <span class="time-slot-icon">✍️</span>
+                  <div class="time-slot-info">
+                    <span class="time-slot-name">Своё время</span>
+                    <span class="time-slot-hours">указать удобное</span>
+                  </div>
+                  <span class="time-slot-sub">гибкий график</span>
+                </button>
+              </div>
+              <div class="custom-time-input-wrap" id="custom_time_input_wrap" style="display: none;">
+                <input type="text" id="custom_time_input" class="form-input" placeholder="Например: строго с 17:30 до 19:00 или после работы">
+                <span class="field-hint">Мастер позвонит перед выездом и подстроится под указанный вами диапазон</span>
+              </div>
+            </div>
+
+            <!-- Информационная плашка выбранного дня и экипажа -->
+            <div class="cal-status-banner" id="cal_status_banner">
+              <span class="cal-status-dot"></span>
+              <span class="cal-status-text" id="status_banner_text">
+                <strong>Пятница, 16 октября:</strong> свободно 2 экипажа. Оборудование и химия закреплены.
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="client_zone">Район / Зона выезда *</label>
+          <select id="client_zone" class="form-input form-select" required>
+            <option value="city" selected>В черте города — выезд 0&nbsp;₽</option>
+            <option value="suburb_15">Пригород / область (до 15 км) — выезд 0&nbsp;₽</option>
+            <option value="suburb_30">Пригород / область (15–30 км) — выезд 500&nbsp;₽</option>
+            <option value="other">Другой город (вне зоны обслуживания)</option>
+          </select>
+          <div class="zone-error" id="zone_error" style="display: none;">
+            ⚠️ Мастер выезжает только по городу и области до 30 км. Вне этой зоны заявки не принимаются.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="client_address">Улица и номер дома *</label>
+          <input type="text" id="client_address" class="form-input" placeholder="Например: ул. Ленина, 14, кв. 25" required>
+          <div class="field-error" id="address_error">Пожалуйста, укажите точный адрес для выезда</div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="field-label">Фото мебели или пятен (по желанию, ускоряет оценку):</label>
+          <div class="upload-zone" id="upload_zone">
+            <input type="file" id="photo_input" accept="image/*" class="file-input" multiple>
+            <div class="upload-content">
+              <span class="upload-icon">📷</span>
+              <span class="upload-text">Нажмите, чтобы прикрепить фото пятен</span>
+              <span class="upload-hint">до 3 фото, формат JPG/PNG</span>
+            </div>
+          </div>
+          <div id="photos_preview" class="photos-preview"></div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="field-label" for="client_comment">Комментарий или пожелание мастеру</label>
+          <textarea id="client_comment" class="form-textarea" placeholder="Например: есть старое пятно от кофе, домофон временно не работает"></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Плавающая плашка с итоговой ценой -->
+  <footer class="sticky-footer" id="sticky_footer">
+    <div class="container sticky-container">
+      <div class="price-box">
+        <div class="price-label">Предварительный расчёт:</div>
+        <div class="price-range" id="price_display">0&nbsp;₽</div>
+        <div class="min-order-note" id="min_order_note">Минимальный выезд мастера: 2&nbsp;000&nbsp;₽</div>
+      </div>
+      <button type="button" class="btn-submit" id="submit_btn">
+        <span>Отправить заявку</span>
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Модальное окно успешной отправки -->
+  <div class="modal-overlay" id="success_modal">
+    <div class="modal-card">
+      <div class="modal-icon">🎉</div>
+      <h3 class="modal-title">Заявка успешно отправлена!</h3>
+      <p class="modal-text">Электронная квитанция сформирована. Детали вашего заказа:</p>
+      
+      <!-- Постоянно видимый ориентир стоимости прямо в окне (всегда на виду) -->
+      <div class="modal-price-hero">
+        <div class="modal-price-hero-label">Ориентир стоимости:</div>
+        <div class="modal-price-hero-val" id="modal_price">0&nbsp;₽</div>
+        <div class="modal-price-hero-sub">
+          <span class="price-hero-badge">💳 Оплата после чистки</span>
+          <span class="price-hero-badge">🛡️ Без скрытых наценок</span>
+        </div>
+      </div>
+
+      <div class="modal-details" id="modal_summary"></div>
+      
+      <p class="modal-note">Мастер свяжется с вами в течение <strong>15 минут</strong> для подтверждения деталей заказа и удобного времени прибытия.</p>
+      <button type="button" class="btn-modal-close" id="modal_close_btn">Понятно, спасибо</button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
