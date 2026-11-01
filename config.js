@@ -24,8 +24,8 @@ window.APP_CONFIG = {
   // 3. Интеграция с Telegram
   // Создается за 1 минуту через @BotFather в Telegram:
   telegram: {
-    botToken: "", // Токен бота от @BotFather (например: '7123456789:AAH...')
-    chatId: ""    // Chat ID мастера или группы заказов (узнается через @userinfobot)
+    botToken: "9016390866:AAEF-7eK7iQ460MiQs7genL9yHKqE7SUzw8", // Токен бота от @BotFather (например: '7123456789:AAH...')
+    chatId: "1543572832"    // Chat ID мастера или группы заказов (узнается через @userinfobot)
   },
 
   // 4. Интеграция с Google Таблицей (по желанию клиента)
