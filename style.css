@@ -1378,6 +1378,18 @@ html {
   box-shadow: 0 0 0 1px var(--primary);
 }
 
+.time-slot-btn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.time-slot-btn.disabled:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
 .time-slot-icon {
   font-size: 18px;
   margin-bottom: 3px;

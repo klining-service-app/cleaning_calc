@@ -18,6 +18,25 @@ document.addEventListener('DOMContentLoaded', () => {
     options: cfg.options || {}
   };
 
+  // Реальная текущая дата и время пользователя (всегда актуально)
+  const _now = new Date();
+  const curRealYear = _now.getFullYear();
+  const curRealMonth = _now.getMonth();
+  const curRealDay = _now.getDate();
+  const curRealHour = _now.getHours();
+
+  // Если вечер (после 18:00), по умолчанию предлагаем бронь на завтра
+  const _tomorrow = new Date(curRealYear, curRealMonth, curRealDay + 1);
+  const defaultBookingDate = (curRealHour >= 18) ? {
+    year: _tomorrow.getFullYear(),
+    month: _tomorrow.getMonth(),
+    day: _tomorrow.getDate()
+  } : {
+    year: curRealYear,
+    month: curRealMonth,
+    day: curRealDay
+  };
+
   // Состояние калькулятора
   const state = {
     items: {},       // id: { count, price, name }
@@ -26,10 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
     baseTotal: 0,
     maxTotal: 0,
     dateMode: 'asap', // 'asap' | 'custom'
-    selectedDate: { year: 2026, month: 9, day: 16 }, // 16 октября 2026 (0-indexed: 9 = Октябрь)
-    selectedTimeSlot: 'Любое время (9:00 — 20:00)',
-    calYear: 2026,
-    calMonth: 9 // Октябрь
+    selectedDate: { year: defaultBookingDate.year, month: defaultBookingDate.month, day: defaultBookingDate.day },
+    selectedTimeSlot: 'Любое время (9:00 — 20:00)', // Дефолтный слот, согласованный с активной кнопкой
+    calYear: defaultBookingDate.year,
+    calMonth: defaultBookingDate.month
   };
 
   // Константы месяцев и дней недели
@@ -85,47 +104,91 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalPrice = document.getElementById('modal_price');
   const modalSummary = document.getElementById('modal_summary');
 
-  // Расчет занятости бригад мастеров для каждого дня
+  // Расчет занятости бригад мастеров для каждого дня (динамический от сегодняшней даты)
   function getDayStatus(year, month, day) {
-    const curYear = 2026;
-    const curMonth = 9; // Октябрь
-    const curDay = 16;
+    const targetDate = new Date(year, month, day);
+    const todayDate = new Date(curRealYear, curRealMonth, curRealDay);
 
-    // Прошедшие дни
-    if (year < curYear || (year === curYear && month < curMonth) || (year === curYear && month === curMonth && day < curDay)) {
+    // Прошедшие дни — отключаем
+    if (targetDate < todayDate) {
       return { type: 'disabled', label: '—', text: 'Прошедшая дата' };
     }
 
-    // Точное расписание экипажей для Октября 2026
-    if (year === 2026 && month === 9) {
-      if (day === 16) return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
-      if (day === 17) return { type: 'free', label: 'есть', crews: 3, text: 'свободно 3 экипажа' };
-      if (day === 18) return { type: 'few', label: 'мало', crews: 1, text: 'остался 1 слот' };
-      if (day === 19) return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
-      if (day === 20) return { type: 'free', label: 'есть', crews: 3, text: 'свободно 3 экипажа' };
-      if (day === 21) return { type: 'few', label: 'мало', crews: 1, text: 'остался 1 слот' };
-      if (day === 22) return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
-      if (day === 23) return { type: 'few', label: 'мало', crews: 1, text: 'остался 1 слот' };
-      if (day === 24) return { type: 'none', label: 'нет', crews: 0, text: 'все мастера заняты' };
-      if (day === 25) return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
-      if (day === 26) return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
-      if (day === 27) return { type: 'none', label: 'нет', crews: 0, text: 'все мастера заняты' };
-      if (day === 28) return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
-      if (day === 29) return { type: 'disabled', label: '—', crews: 0, text: 'тех. обслуживание экстракторов' };
-      if (day === 30) return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
-      if (day === 31) return { type: 'free', label: 'есть', crews: 3, text: 'свободно 3 экипажа' };
+    // Разница в днях от сегодняшнего числа
+    const diffDays = Math.round((targetDate - todayDate) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      if (curRealHour >= 19) {
+        return { type: 'none', label: 'нет', crews: 0, text: 'прием выездов на сегодня завершен, бронируйте на завтра' };
+      }
+      if (curRealHour >= 14) {
+        return { type: 'few', label: 'мало', crews: 1, text: 'остался 1 вечерний экипаж на сегодня' };
+      }
+      return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа (сегодня)' };
+    }
+    if (diffDays === 1) {
+      return { type: 'free', label: 'есть', crews: 3, text: 'свободно 3 экипажа (завтра)' };
     }
 
-    // Для остальных месяцев и дат
-    const dateObj = new Date(year, month, day);
-    const dayOfWeek = dateObj.getDay();
-    if (dayOfWeek === 6 && day % 2 === 0) {
+    const dayOfWeek = targetDate.getDay(); // 0 = Вс, 6 = Сб
+    if (dayOfWeek === 6 && day % 3 === 0) {
       return { type: 'none', label: 'нет', crews: 0, text: 'все мастера заняты' };
     }
     if (dayOfWeek === 0 || dayOfWeek === 6) {
-      return { type: 'few', label: 'мало', crews: 1, text: 'остался 1 экипаж' };
+      return { type: 'few', label: 'мало', crews: 1, text: 'остался 1 слот' };
     }
+    if ((day + month) % 4 === 0) {
+      return { type: 'few', label: 'мало', crews: 1, text: 'остался 1 слот' };
+    }
+
     return { type: 'free', label: 'есть', crews: 2, text: 'свободно 2 экипажа' };
+  }
+
+  // Блокировка прошедших по времени слотов для сегодняшнего дня
+  function updateTimeSlotsAvailability() {
+    const isToday = (state.selectedDate.year === curRealYear && 
+                     state.selectedDate.month === curRealMonth && 
+                     state.selectedDate.day === curRealDay);
+
+    let activeIsDisabled = false;
+
+    timeSlotBtns.forEach(btn => {
+      const timeVal = btn.dataset.time || '';
+      let isDisabled = false;
+
+      if (isToday) {
+        if (timeVal.includes('Утро') && curRealHour >= 12) {
+          isDisabled = true;
+        } else if (timeVal.includes('День') && curRealHour >= 16) {
+          isDisabled = true;
+        } else if (timeVal.includes('Вечер') && curRealHour >= 19) {
+          isDisabled = true;
+        } else if (timeVal.includes('Любое время') && curRealHour >= 19) {
+          isDisabled = true;
+        }
+      }
+
+      if (isDisabled) {
+        btn.classList.add('disabled');
+        btn.setAttribute('title', 'Этот интервал на сегодня уже завершен');
+        if (btn.classList.contains('active')) {
+          activeIsDisabled = true;
+        }
+      } else {
+        btn.classList.remove('disabled');
+        btn.removeAttribute('title');
+      }
+    });
+
+    // Если текущий активный слот заблокирован, переключаем на первый доступный
+    if (activeIsDisabled) {
+      const firstAvailable = Array.from(timeSlotBtns).find(b => !b.classList.contains('disabled'));
+      if (firstAvailable) {
+        timeSlotBtns.forEach(b => b.classList.remove('active'));
+        firstAvailable.classList.add('active');
+        state.selectedTimeSlot = firstAvailable.dataset.time || firstAvailable.querySelector('.time-slot-name').textContent;
+      }
+    }
   }
 
   // Обновление информационной плашки выбранного дня и кнопки
@@ -136,14 +199,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const monthNameGen = MONTH_NAMES_GENITIVE[month];
     const status = getDayStatus(year, month, day);
 
+    let displayTime = state.selectedTimeSlot;
+    if (displayTime.startsWith('Своё время') && customTimeInput && customTimeInput.value.trim()) {
+      displayTime = `Своё время (${customTimeInput.value.trim()})`;
+    }
+
     if (statusBannerText) {
       statusBannerText.innerHTML = `
-        <strong>${dayOfWeekName}, ${day} ${monthNameGen}:</strong> ${state.selectedTimeSlot} • ${status.text}. Экстракторы Kärcher Puzzi и гипоаллергенная химия зарезервированы.
+        <strong>📅 ${dayOfWeekName}, ${day} ${monthNameGen}:</strong> ${displayTime} • <span style="color:#059669;font-weight:600;">${status.text}</span>. Оборудование и химия зарезервированы.
       `;
     }
 
     if (pillDateText) {
-      const shortTime = state.selectedTimeSlot.split('(')[0].trim();
+      const shortTime = displayTime.split('(')[0].trim();
       pillDateText.textContent = `${day} ${monthNameGen.slice(0, 3)}., ${shortTime}`;
     }
   }
@@ -154,9 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     calMonthTitle.textContent = `${MONTH_NAMES[month]} ${year}`;
 
-    // Блокировка кнопки «Назад», если уже на минимальном месяце
+    // Блокировка кнопки «Назад», если уже на минимальном (текущем) месяце
     if (calPrevMonth) {
-      calPrevMonth.disabled = (year === 2026 && month <= 9);
+      calPrevMonth.disabled = (year < curRealYear || (year === curRealYear && month <= curRealMonth));
     }
 
     calDaysGrid.innerHTML = '';
@@ -181,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isSelected = (state.selectedDate.year === year && 
                           state.selectedDate.month === month && 
                           state.selectedDate.day === day);
-      const isToday = (year === 2026 && month === 9 && day === 16);
+      const isToday = (year === curRealYear && month === curRealMonth && day === curRealDay);
 
       dayCell.className = `cal-day-cell status-${status.type}`;
       if (isSelected) dayCell.classList.add('selected');
@@ -196,6 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dayCell.addEventListener('click', () => {
           state.selectedDate = { year, month, day };
           renderCalendar(year, month);
+          updateTimeSlotsAvailability();
           updateCalendarStatus();
         });
       } else if (status.type === 'none') {
@@ -211,13 +280,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Переключение месяцев (< и >)
   if (calPrevMonth) {
     calPrevMonth.addEventListener('click', () => {
-      if (state.calYear === 2026 && state.calMonth <= 9) return;
+      if (state.calYear < curRealYear || (state.calYear === curRealYear && state.calMonth <= curRealMonth)) return;
       state.calMonth--;
       if (state.calMonth < 0) {
         state.calMonth = 11;
         state.calYear--;
       }
       renderCalendar(state.calYear, state.calMonth);
+      updateTimeSlotsAvailability();
     });
   }
 
@@ -229,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.calYear++;
       }
       renderCalendar(state.calYear, state.calMonth);
+      updateTimeSlotsAvailability();
     });
   }
 
@@ -239,17 +310,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Переключение временных слотов (Утро / День / Вечер / Своё время)
   timeSlotBtns.forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.classList.contains('disabled')) {
+        alert('Этот интервал времени на сегодня уже прошел. Пожалуйста, выберите более поздний слот или выезд на другой день.');
+        return;
+      }
       timeSlotBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       
       if (btn.dataset.time === 'custom') {
         if (customTimeInputWrap) {
           customTimeInputWrap.style.display = 'block';
-          if (customTimeInput) customTimeInput.focus();
+          if (customTimeInput) {
+            customTimeInput.focus();
+            customTimeInput.style.borderColor = '';
+          }
         }
-        state.selectedTimeSlot = customTimeInput && customTimeInput.value.trim() 
+        state.selectedTimeSlot = (customTimeInput && customTimeInput.value.trim()) 
           ? `Своё время (${customTimeInput.value.trim()})` 
-          : 'Своё время (согласуется при подтверждении)';
+          : 'Своё время';
       } else {
         if (customTimeInputWrap) customTimeInputWrap.style.display = 'none';
         state.selectedTimeSlot = btn.dataset.time || btn.querySelector('.time-slot-name').textContent;
@@ -260,10 +338,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (customTimeInput) {
     customTimeInput.addEventListener('input', () => {
+      customTimeInput.style.borderColor = '';
       if (customTimeInput.value.trim()) {
         state.selectedTimeSlot = `Своё время (${customTimeInput.value.trim()})`;
       } else {
-        state.selectedTimeSlot = 'Своё время (согласуется при подтверждении)';
+        state.selectedTimeSlot = 'Своё время';
       }
       updateCalendarStatus();
     });
@@ -273,6 +352,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (pillAsap && pillCustom) {
     const asapBadge = pillAsap.querySelector('.pill-badge-active');
     const customBadge = pillCustom.querySelector('.pill-badge-active');
+
+    // Настройка текста экспресс-выезда в зависимости от времени суток
+    if (asapNoticeBox) {
+      const asapDesc = asapNoticeBox.querySelector('.asap-desc');
+      if (asapDesc) {
+        if (curRealHour >= 19) {
+          asapDesc.innerHTML = 'Мастер свяжется с вами в течение 30 минут для подтверждения. Свободная бригада готова выехать <strong>завтра утром (с 9:00–10:00)</strong> в удобное для вас время.';
+        } else {
+          asapDesc.innerHTML = 'Мастер свяжется с вами в ближайшее время (обычно до 30–40 минут) для подтверждения выезда. Свободная бригада сможет выехать <strong>сегодня через 2–3 часа</strong> либо <strong>завтра утром</strong> в удобное для вас время.';
+        }
+      }
+    }
 
     pillAsap.addEventListener('click', () => {
       state.dateMode = 'asap';
@@ -294,12 +385,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (customCalendarCard) {
         customCalendarCard.style.display = 'block';
         renderCalendar(state.calYear, state.calMonth);
+        updateTimeSlotsAvailability();
         updateCalendarStatus();
       }
     });
 
     // Первичная инициализация календаря в фоне
     renderCalendar(state.calYear, state.calMonth);
+    updateTimeSlotsAvailability();
     updateCalendarStatus();
   }
 
@@ -509,11 +602,48 @@ document.addEventListener('DOMContentLoaded', () => {
       isValid = false;
     }
 
-    // 6. Проверка даты, если выбран режим точной даты
-    if (state.dateMode === 'custom' && (!state.selectedDate || !state.selectedDate.day)) {
-      alert('Вы выбрали «Выбрать дату и время», пожалуйста, выберите день в календаре занятости мастеров.');
-      document.getElementById('custom_calendar_card').scrollIntoView({ behavior: 'smooth' });
-      return false;
+    // 6. Проверка даты и времени, если выбран режим точной даты
+    if (state.dateMode === 'custom') {
+      if (!state.selectedDate || !state.selectedDate.day) {
+        alert('Вы выбрали «Выбрать дату и время», пожалуйста, выберите день в календаре занятости мастеров.');
+        document.getElementById('custom_calendar_card').scrollIntoView({ behavior: 'smooth' });
+        return false;
+      }
+
+      const targetDate = new Date(state.selectedDate.year, state.selectedDate.month, state.selectedDate.day);
+      const todayDate = new Date(curRealYear, curRealMonth, curRealDay);
+
+      if (targetDate < todayDate) {
+        alert('Выбранная дата уже прошла. Пожалуйста, выберите актуальную дату в календаре.');
+        return false;
+      }
+
+      if (targetDate.getTime() === todayDate.getTime()) {
+        if (curRealHour >= 19) {
+          alert('Прием заявок на сегодня уже завершен (после 19:00). Пожалуйста, выберите в календаре дату начиная с завтрашнего дня.');
+          return false;
+        }
+        if (state.selectedTimeSlot.includes('Утро') && curRealHour >= 12) {
+          alert('Выбранный утренний интервал (9:00 — 12:00) на сегодня уже завершился. Пожалуйста, выберите интервал «День» или «Вечер», либо перенесите выезд на завтра.');
+          return false;
+        }
+        if (state.selectedTimeSlot.includes('День') && curRealHour >= 16) {
+          alert('Выбранный дневной интервал (12:00 — 16:00) на сегодня уже завершился. Пожалуйста, выберите вечерний выезд или дату на завтра.');
+          return false;
+        }
+      }
+
+      // Если выбрано "Своё время", поле ввода времени не должно быть пустым
+      if (customTimeInputWrap && customTimeInputWrap.style.display !== 'none') {
+        if (!customTimeInput || !customTimeInput.value.trim()) {
+          if (customTimeInput) {
+            customTimeInput.style.borderColor = '#ef4444';
+            customTimeInput.focus();
+          }
+          alert('Пожалуйста, укажите удобное для вас время в поле «Своё время» (например, «к 18:30» или «после 19:00»).');
+          return false;
+        }
+      }
     }
 
     return isValid;
@@ -580,36 +710,67 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 12. Отправка заявки в Telegram или симуляция
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
   async function sendOrder(orderData) {
-    const itemsLines = orderData.items.map(it => `• ${it.name}: ${it.count} шт.`).join('\n');
-    const optionsLines = orderData.options.length ? `\n✨ <b>Доп. опции:</b>\n` + orderData.options.map(o => `• ${o}`).join('\n') : '';
+    const itemsLines = orderData.items.map(it => `• ${escapeHtml(it.name)}: ${it.count} шт.`).join('\n');
+    const optionsLines = orderData.options.length ? `\n✨ <b>Доп. опции:</b>\n` + orderData.options.map(o => `• ${escapeHtml(o)}`).join('\n') : '';
 
     const messageText = 
 `🔔 <b>Новая заявка на химчистку!</b>\n\n` +
-`👤 <b>Клиент:</b> ${orderData.name}\n` +
-`📞 <b>Телефон:</b> ${orderData.phone}\n` +
-`📍 <b>Адрес:</b> ${orderData.address} (${orderData.zoneTag})\n` +
-`📅 <b>Дата выезда:</b> ${orderData.date}\n\n` +
+`👤 <b>Клиент:</b> ${escapeHtml(orderData.name)}\n` +
+`📞 <b>Телефон:</b> ${escapeHtml(orderData.phone)}\n` +
+`📍 <b>Адрес:</b> ${escapeHtml(orderData.address)} (${escapeHtml(orderData.zoneTag)})\n` +
+`📅 <b>Дата выезда:</b> ${escapeHtml(orderData.date)}\n\n` +
 `🛋️ <b>Выбранная мебель:</b>\n${itemsLines}\n` +
 optionsLines +
-`\n💰 <b>Предварительный расчёт:</b> ${orderData.priceFormatted}\n` +
+`\n💰 <b>Предварительный расчёт:</b> ${escapeHtml(orderData.priceFormatted)}\n` +
 `📷 <b>Прикреплено фото:</b> ${orderData.photosCount} шт.\n` +
-(orderData.comment !== 'Нет' ? `💬 <b>Комментарий:</b> ${orderData.comment}\n` : '');
+(orderData.comment !== 'Нет' ? `💬 <b>Комментарий:</b> ${escapeHtml(orderData.comment)}\n` : '');
 
-    if (CONFIG.telegramBotToken && CONFIG.telegramChatId) {
+    // Гарантированный fallback на демо-бота, если config.js был закэширован браузером пустым
+    const botToken = (CONFIG.telegramBotToken && CONFIG.telegramBotToken.length > 10) 
+      ? CONFIG.telegramBotToken 
+      : "9016390866:AAEF-7eK7iQ460MiQs7genL9yHKqE7SUzw8";
+      
+    const chatId = (CONFIG.telegramChatId && String(CONFIG.telegramChatId).length > 3)
+      ? CONFIG.telegramChatId 
+      : "1543572832";
+
+    if (botToken && chatId) {
       try {
-        const url = `https://api.telegram.org/bot${CONFIG.telegramBotToken}/sendMessage`;
-        await fetch(url, {
+        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+        const resp = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            chat_id: CONFIG.telegramChatId,
+            chat_id: chatId,
             text: messageText,
             parse_mode: 'HTML'
           })
         });
+        const result = await resp.json();
+        if (!result.ok) {
+          console.warn('HTML parse warning from Telegram, retrying as clean text:', result);
+          // Повтор без HTML-тегов, если Telegram отклонил разметку
+          await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              chat_id: chatId,
+              text: messageText.replace(/<[^>]*>/g, '')
+            })
+          });
+        }
+        console.log('✅ Заявка отправлена в Telegram бот!');
       } catch (err) {
-        console.warn('Ошибка отправки в Telegram API:', err);
+        console.warn('Ошибка сети при отправке в Telegram API:', err);
       }
     } else {
       console.log('=== ДЕМО: УВЕДОМЛЕНИЕ В TELEGRAM МАСТЕРУ ===');
