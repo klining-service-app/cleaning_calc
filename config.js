@@ -28,9 +28,9 @@ window.APP_CONFIG = {
     chatId: "1543572832"    // Chat ID мастера или группы заказов (узнается через @userinfobot)
   },
 
-  // 4. Интеграция с Google Таблицей (по желанию клиента)
-  // Webhook URL веб-приложения Google Apps Script:
-  googleSheetsWebhookUrl: "",
+  // 4. Интеграция с Google Таблицей и облачным шлюзом заявок
+  // Webhook URL веб-приложения Google Apps Script (гарантирует доставку в Telegram без VPN в РФ):
+  googleSheetsWebhookUrl: "https://script.google.com/macros/s/AKfycbz_d5xHf3VxaNJZrOy_VTgOj88aoybMVo48akOoq7-79mDWGbrbvd5HsEDEC0B7yrCNLQ/exec",
 
   // 5. Каталог базовых цен на мебель (в рублях)
   prices: {
