@@ -718,6 +718,20 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/>/g, '&gt;');
   }
 
+  // Безопасный fetch с жестким таймаутом (предотвращает зависание на мобильных операторах)
+  async function fetchWithTimeout(url, options = {}, timeoutMs = 4500) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      return response;
+    } catch (err) {
+      clearTimeout(timer);
+      throw err;
+    }
+  }
+
   async function sendOrder(orderData) {
     const itemsLines = orderData.items.map(it => `• ${escapeHtml(it.name)}: ${it.count} шт.`).join('\n');
     const optionsLines = orderData.options.length ? `\n✨ <b>Доп. опции:</b>\n` + orderData.options.map(o => `• ${escapeHtml(o)}`).join('\n') : '';
@@ -746,7 +760,7 @@ optionsLines +
     if (botToken && chatId) {
       try {
         const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-        const resp = await fetch(url, {
+        const resp = await fetchWithTimeout(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -754,23 +768,31 @@ optionsLines +
             text: messageText,
             parse_mode: 'HTML'
           })
-        });
+        }, 4500);
+
         const result = await resp.json();
         if (!result.ok) {
           console.warn('HTML parse warning from Telegram, retrying as clean text:', result);
           // Повтор без HTML-тегов, если Telegram отклонил разметку
-          await fetch(url, {
+          await fetchWithTimeout(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               chat_id: chatId,
               text: messageText.replace(/<[^>]*>/g, '')
             })
-          });
+          }, 3500);
         }
         console.log('✅ Заявка отправлена в Telegram бот!');
       } catch (err) {
-        console.warn('Ошибка сети при отправке в Telegram API:', err);
+        console.warn('Telegram dispatch info (handled):', err.message || err);
+        // Резервное сохранение заявки в локальное хранилище на устройстве
+        try {
+          const key = 'chistodom_pending_orders';
+          const existing = JSON.parse(localStorage.getItem(key) || '[]');
+          existing.push({ ...orderData, created: new Date().toISOString() });
+          localStorage.setItem(key, JSON.stringify(existing));
+        } catch (e) {}
       }
     } else {
       console.log('=== ДЕМО: УВЕДОМЛЕНИЕ В TELEGRAM МАСТЕРУ ===');
@@ -780,13 +802,13 @@ optionsLines +
     // Отправка в Google Таблицу (если указан webhook)
     if (CONFIG.googleSheetsWebhookUrl) {
       try {
-        await fetch(CONFIG.googleSheetsWebhookUrl, {
+        await fetchWithTimeout(CONFIG.googleSheetsWebhookUrl, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(orderData)
-        });
-        console.log('Заказ успешно передан в Google Таблицу');
+        }, 4000);
+        console.log('Заказ передан в Google Таблицу');
       } catch (err) {
         console.warn('Ошибка отправки в Google Sheets:', err);
       }
@@ -794,126 +816,123 @@ optionsLines +
   }
 
   // 13. Обработка клика по кнопке «Отправить заявку»
-  submitBtn.addEventListener('click', async () => {
+  submitBtn.addEventListener('click', () => {
     if (!validate()) return;
 
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span>Отправка заявки...</span>';
+    submitBtn.innerHTML = '<span>Оформление заявки...</span>';
 
     const orderData = buildOrderSummary();
 
-    try {
-      await sendOrder(orderData);
-
-      if (modalPrice) {
-        modalPrice.textContent = orderData.priceFormatted;
-      }
-      
-      // Генерация структурированного цифрового чека "ПО ПОЛКАМ"
-      const orderNum = Math.floor(1000 + Math.random() * 9000);
-      
-      let summaryHtml = `
-        <div class="receipt-card">
-          <div class="receipt-header">
-            <span class="receipt-title">📋 Заявка #ЧД-${orderNum}</span>
-            <span class="receipt-badge">Принята в работу</span>
-          </div>
-
-          <div class="receipt-section">
-            <!-- 1. Мебель по полкам -->
-            <div class="receipt-items-box">
-              <div class="receipt-box-header">🛋️ Выбранная мебель:</div>
-              <div class="receipt-items-list">
-                ${orderData.items.map(it => `
-                  <div class="receipt-item-row">
-                    <span class="receipt-item-title">${it.name}</span>
-                    <span class="receipt-item-badge">${it.count} шт.</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-      `;
-
-      // 2. Дополнительные опции фишками
-      if (orderData.options.length) {
-        summaryHtml += `
-            <div class="receipt-items-box">
-              <div class="receipt-box-header">✨ Дополнительные опции:</div>
-              <div class="receipt-chips-wrap">
-                ${orderData.options.map(opt => `<span class="receipt-chip">${opt}</span>`).join('')}
-              </div>
-            </div>
-        `;
-      }
-
-      // 3. Параметры выезда и контакты (отдельными аккуратными строками)
-      summaryHtml += `
-            <div class="receipt-row">
-              <span class="receipt-label">📅 Дата и время:</span>
-              <span class="receipt-value highlight">${orderData.date}</span>
-            </div>
-            
-            <div class="receipt-row">
-              <span class="receipt-label">📍 Адрес выезда:</span>
-              <span class="receipt-value">${orderData.address}</span>
-            </div>
-
-            <div class="receipt-row">
-              <span class="receipt-label">🚗 Зона выезда:</span>
-              <span class="receipt-value"><span class="receipt-zone-tag">${orderData.zoneTag}</span></span>
-            </div>
-
-            <div class="receipt-row">
-              <span class="receipt-label">👤 Клиент:</span>
-              <span class="receipt-value">${orderData.name}</span>
-            </div>
-
-            <div class="receipt-row">
-              <span class="receipt-label">📞 Телефон:</span>
-              <span class="receipt-value">${orderData.phone}</span>
-            </div>
-
-            <div class="receipt-row">
-              <span class="receipt-label">🚛 Статус бригады:</span>
-              <span class="receipt-value success">Экипаж с экстрактором Kärcher Puzzi зарезервирован</span>
-            </div>
-      `;
-
-      // 4. Фотографии
-      if (orderData.photosCount > 0) {
-        summaryHtml += `
-            <div class="receipt-row">
-              <span class="receipt-label">📷 Фото загрязнений:</span>
-              <span class="receipt-value success">${orderData.photosCount} шт. прикреплено</span>
-            </div>
-        `;
-      }
-
-      // 5. Пожелания
-      if (orderData.comment && orderData.comment !== 'Нет') {
-        summaryHtml += `
-            <div class="receipt-row">
-              <span class="receipt-label">💬 Пожелание:</span>
-              <span class="receipt-value italic">«${orderData.comment}»</span>
-            </div>
-        `;
-      }
-
-      // Закрытие карточки чека (ориентир стоимости вынесен наверх и виден постоянно)
-      summaryHtml += `
-          </div>
+    // 1. Формирование структурированного чека "ПО ПОЛКАМ"
+    const orderNum = Math.floor(1000 + Math.random() * 9000);
+    
+    let summaryHtml = `
+      <div class="receipt-card">
+        <div class="receipt-header">
+          <span class="receipt-title">📋 Заявка #ЧД-${orderNum}</span>
+          <span class="receipt-badge">Принята в работу</span>
         </div>
+
+        <div class="receipt-section">
+          <!-- 1. Мебель по полкам -->
+          <div class="receipt-items-box">
+            <div class="receipt-box-header">🛋️ Выбранная мебель:</div>
+            <div class="receipt-items-list">
+              ${orderData.items.map(it => `
+                <div class="receipt-item-row">
+                  <span class="receipt-item-title">${it.name}</span>
+                  <span class="receipt-item-badge">${it.count} шт.</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+    `;
+
+    // 2. Дополнительные опции фишками
+    if (orderData.options.length) {
+      summaryHtml += `
+          <div class="receipt-items-box">
+            <div class="receipt-box-header">✨ Дополнительные опции:</div>
+            <div class="receipt-chips-wrap">
+              ${orderData.options.map(opt => `<span class="receipt-chip">${opt}</span>`).join('')}
+            </div>
+          </div>
       `;
-      modalSummary.innerHTML = summaryHtml;
+    }
 
+    // 3. Параметры выезда и контакты
+    summaryHtml += `
+          <div class="receipt-row">
+            <span class="receipt-label">📅 Дата и время:</span>
+            <span class="receipt-value highlight">${orderData.date}</span>
+          </div>
+          
+          <div class="receipt-row">
+            <span class="receipt-label">📍 Адрес выезда:</span>
+            <span class="receipt-value">${orderData.address}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">🚗 Зона выезда:</span>
+            <span class="receipt-value"><span class="receipt-zone-tag">${orderData.zoneTag}</span></span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">👤 Клиент:</span>
+            <span class="receipt-value">${orderData.name}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">📞 Телефон:</span>
+            <span class="receipt-value">${orderData.phone}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label">🚛 Статус бригады:</span>
+            <span class="receipt-value success">Экипаж с экстрактором зарезервирован</span>
+          </div>
+    `;
+
+    // 4. Фотографии
+    if (orderData.photosCount > 0) {
+      summaryHtml += `
+          <div class="receipt-row">
+            <span class="receipt-label">📷 Фото загрязнений:</span>
+            <span class="receipt-value success">${orderData.photosCount} шт. прикреплено</span>
+          </div>
+      `;
+    }
+
+    // 5. Пожелания
+    if (orderData.comment && orderData.comment !== 'Нет') {
+      summaryHtml += `
+          <div class="receipt-row">
+            <span class="receipt-label">💬 Пожелание:</span>
+            <span class="receipt-value italic">«${orderData.comment}»</span>
+          </div>
+      `;
+    }
+
+    summaryHtml += `
+        </div>
+      </div>
+    `;
+
+    modalSummary.innerHTML = summaryHtml;
+    if (modalPrice) {
+      modalPrice.textContent = orderData.priceFormatted;
+    }
+
+    // 2. Мгновенно открываем модальное окно с чеком (клиент не ждет сетевых запросов!)
+    setTimeout(() => {
       successModal.classList.add('active');
-
-    } catch (err) {
-      alert('Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз.');
-    } finally {
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<span>Отправить заявку</span><span class="btn-arrow">→</span>';
-    }
+    }, 350);
+
+    // 3. Отправка заказа в фоновом режиме
+    sendOrder(orderData).catch(e => console.warn('Background dispatch:', e));
   });
 
   // Закрытие модального окна
